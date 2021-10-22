@@ -1,10 +1,12 @@
 import express, { Application, Request, Response } from "express";
+import cors from 'cors'
+import dotenv from 'dotenv'
 import routes from './src/routes'
-
+dotenv.config()
 const app: Application = express();
 const port = process.env.PORT;
 
-// Body parsing Middleware
+app.use(cors({ origin: process.env.HOST }));
 app.use(express.json());
 app.use(express.raw());
 app.use(express.urlencoded({ extended: true }));
