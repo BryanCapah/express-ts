@@ -1,7 +1,10 @@
 import express, { Application, Request, Response } from "express";
 import cors from 'cors'
 import dotenv from 'dotenv'
-import routes from './src/routes'
+import routes from './routes'
+import { sequelize } from "./databases";
+
+import { Error as SequelizeError } from 'sequelize'
 dotenv.config()
 const app: Application = express();
 const port = process.env.PORT;
@@ -12,6 +15,22 @@ app.use(express.raw());
 app.use(express.urlencoded({ extended: true }));
 try {
     app.listen(port, (): void => {
+        sequelize.authenticate().then(async () => {
+            console.log('database connected');
+
+            try {
+                await sequelize.sync({ force: true })
+            }
+            catch (e: any) {
+                console.log(e.message);
+                throw new SequelizeError()
+
+            }
+
+        }).catch((e: any) => {
+            console.log(e.message);
+
+        })
         console.log(`Connected successfully on port ${port}`);
     });
 } catch (error: any) {
