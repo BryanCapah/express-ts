@@ -15,22 +15,8 @@ app.use(express.raw());
 app.use(express.urlencoded({ extended: true }));
 try {
     app.listen(port, (): void => {
-        sequelize.authenticate().then(async () => {
-            console.log('database connected');
 
-            try {
-                await sequelize.sync({ force: true })
-            }
-            catch (e: any) {
-                console.log(e.message);
-                throw new SequelizeError()
 
-            }
-
-        }).catch((e: any) => {
-            console.log(e.message);
-
-        })
         console.log(`Connected successfully on port ${port}`);
     });
 } catch (error: any) {
@@ -45,3 +31,59 @@ app.get("/",
     }
 );
 app.use('/user', routes.users)
+
+interface ILaptop {
+    name: string
+    series: number | string
+    years: number
+}
+
+class Laptop implements ILaptop {
+    name: string
+    series: number | string
+    years: number
+
+    constructor({ name, series, years }: ILaptop) {
+        this.name = name
+        this.series = series
+        this.years = years
+    }
+
+}
+
+interface IAsus {
+    series: number | string,
+    years: number
+}
+
+class Asus extends Laptop {
+    constructor({ series, years }: IAsus) {
+        super({ name: 'Asus', series, years })
+    }
+
+}
+
+class ZenBook extends Asus {
+    constructor({ years }: { years: number }) {
+        super({ series: 'Zenbook', years })
+    }
+}
+
+const zenBook = new ZenBook({ years: 2001 })
+console.clear()
+console.log(zenBook);
+
+const laptopZenbook = (): IAsus => {
+    return {
+        series: "Zenbook",
+        years: 2001
+    }
+}
+const ttt = async (): Promise<IAsus> => {
+    const test: IAsus = await laptopZenbook()
+    console.log(test);
+    return test
+
+}
+
+ttt()
